@@ -1,0 +1,27 @@
+Instrument: TOPAZ
+IPTS: 31189
+Runs: 46742:46752
+UBFile: /SNS/TOPAZ/IPTS-31189/shared/YAG/find_peaks_eng_46643-46692/YAG_295K_Cubic_I.mat
+VanadiumFile: /SNS/TOPAZ/shared/Vanadium/2022C_1202_AG/solid_angle_1p8-18.nxs
+BackgroundFile: null
+FluxFile: /SNS/TOPAZ/shared/Vanadium/2022C_1202_AG/flux_1p8-18.nxs
+MaskFile: null
+DetectorCalibration: /SNS/TOPAZ/shared/calibration/2022B/TOPAZ_2022B_AG.DetCal
+Grouping: 2x2
+Integration:
+  Cell: Cubic
+  Centering: I
+  ModVec1: [0, 0, 0]
+  ModVec2: [0, 0, 0]
+  ModVec3: [0, 0, 0]
+  MaxOrder: 0
+  CrossTerms: false
+  MinD: 0.5
+  Radius: 0.2
+Normalization:
+  Symmetry: null
+  Projections: [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+  Extents: [[-10, 10], [-10, 10], [-10, 10]]
+  Bins: [201, 201, 201]
+OutputPath: /SNS/TOPAZ/IPTS-31189/shared/YAG/garnet_reduction
+OutputName: Yb3Al5O12
