@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mantid.simpleapi import *
 
-outdir = '/SNS/TOPAZ/IPTS-31189/shared/YAG/calibration_2024'
-calibration_file = '/SNS/TOPAZ/shared/calibration/2022B/TOPAZ_2022B.DetCal'
+outdir = f'/SNS/{inst}/IPTS-31189/shared/YAG/calibration_2024'
+# ToDo change output location
+calibration_file = f'~/test.DetCal'
 
 a = 11.9386
 b = 11.9386
@@ -26,9 +27,11 @@ density_threshold = 10000
 peak_radii = [0.1, 0.12, 0.15]
 sig_noise = 50
 
+inst='SNAP'
+
 for i, run in enumerate(runs):
 
-    filename = '/SNS/TOPAZ/IPTS-{}/nexus/TOPAZ_{}.nxs.h5'.format(IPTS, run)
+    filename = f'/SNS/{inst}/IPTS-{ipts}/nexus/{inst}_{run}.nxs.h5'
 
     LoadEventNexus(Filename=filename,
                    OutputWorkspace='data')
@@ -142,32 +145,32 @@ SCDCalibratePanels(PeakWorkspace='peaks',
 CloneWorkspace(InputWorkspace='peaks',
                OutputWorkspace='calibration_ws')
 
-LoadEmptyInstrument(InstrumentName='TOPAZ',
-                    OutputWorkspace='TOPAZ')
+LoadEmptyInstrument(InstrumentName='inst',
+                    OutputWorkspace='inst')
 
-LoadParameterFile(Workspace='TOPAZ', 
+LoadParameterFile(Workspace='inst', 
                   Filename=os.path.join(outdir, 'calibration.xml'))
 
-sample_pos = mtd['TOPAZ'].getInstrument().getComponentByName('sample-position').getPos()
+sample_pos = mtd['inst'].getInstrument().getComponentByName('sample-position').getPos()
 
 for bank in np.unique(mtd['calibration_ws'].column(13)):
-    MoveInstrumentComponent(Workspace='TOPAZ', 
+    MoveInstrumentComponent(Workspace='inst', 
                             ComponentName=bank, 
                             X=-sample_pos[0], Y=-sample_pos[1], Z=-sample_pos[2], 
                             RelativePosition=True)
 
-MoveInstrumentComponent(Workspace='TOPAZ', 
+MoveInstrumentComponent(Workspace='inst', 
                         ComponentName='sample-position', 
                         X=-sample_pos[0], Y=-sample_pos[1], Z=-sample_pos[2], 
                         RelativePosition=True)
 
-MoveInstrumentComponent(Workspace='TOPAZ', 
+MoveInstrumentComponent(Workspace='inst', 
                         ComponentName='moderator', 
                         X=0, Y=0, Z=-sample_pos[2], 
                         RelativePosition=True)
 
 ApplyInstrumentToPeaks(InputWorkspace='calibration_ws', 
-                       InstrumentWorkspace='TOPAZ',
+                       InstrumentWorkspace='inst',
                        OutputWorkspace='calibration_ws')
 
 SCDCalibratePanels(PeakWorkspace='calibration_ws',
@@ -203,32 +206,32 @@ SCDCalibratePanels(PeakWorkspace='calibration_ws',
 CloneWorkspace(InputWorkspace='peaks',
                OutputWorkspace='detcal_ws')
 
-LoadEmptyInstrument(InstrumentName='TOPAZ',
-                    OutputWorkspace='TOPAZ')
+LoadEmptyInstrument(InstrumentName='inst',
+                    OutputWorkspace='inst')
 
-LoadParameterFile(Workspace='TOPAZ', 
+LoadParameterFile(Workspace='inst', 
                   Filename=os.path.join(outdir, 'calibration.xml'))
 
-sample_pos = mtd['TOPAZ'].getInstrument().getComponentByName('sample-position').getPos()
+sample_pos = mtd['inst'].getInstrument().getComponentByName('sample-position').getPos()
 
 for bank in np.unique(mtd['detcal_ws'].column(13)):
-    MoveInstrumentComponent(Workspace='TOPAZ', 
+    MoveInstrumentComponent(Workspace='inst', 
                             ComponentName=bank, 
                             X=-sample_pos[0], Y=-sample_pos[1], Z=-sample_pos[2], 
                             RelativePosition=True)
 
-MoveInstrumentComponent(Workspace='TOPAZ', 
+MoveInstrumentComponent(Workspace='inst', 
                         ComponentName='sample-position', 
                         X=-sample_pos[0], Y=-sample_pos[1], Z=-sample_pos[2], 
                         RelativePosition=True)
 
-MoveInstrumentComponent(Workspace='TOPAZ', 
+MoveInstrumentComponent(Workspace='inst', 
                         ComponentName='moderator', 
                         X=0, Y=0, Z=-sample_pos[2], 
                         RelativePosition=True)
 
 ApplyInstrumentToPeaks(InputWorkspace='detcal_ws', 
-                       InstrumentWorkspace='TOPAZ',
+                       InstrumentWorkspace='inst',
                        OutputWorkspace='detcal_ws')
 
 # ---
@@ -236,13 +239,13 @@ ApplyInstrumentToPeaks(InputWorkspace='detcal_ws',
 CloneWorkspace(InputWorkspace='peaks',
                OutputWorkspace='cal')
 
-LoadEmptyInstrument(InstrumentName='TOPAZ',
-                    OutputWorkspace='TOPAZ')
+LoadEmptyInstrument(InstrumentName='inst',
+                    OutputWorkspace='inst')
 
-LoadParameterFile(Workspace='TOPAZ', 
+LoadParameterFile(Workspace='inst', 
                   Filename=os.path.join(outdir, 'cal.xml'))
 
 ApplyInstrumentToPeaks(InputWorkspace='cal', 
-                       InstrumentWorkspace='TOPAZ',
+                       InstrumentWorkspace='inst',
                        OutputWorkspace='cal')
                       
