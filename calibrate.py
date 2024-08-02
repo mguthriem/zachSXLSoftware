@@ -23,14 +23,14 @@ sig_noise = 50
 #beamline axes TODO: (Generalise...create a goniometer set-up file to store? This 
 #the goniometer could be automated via an input to calibrationObject 
 
-beamLineAxis0 ='BL3:Mot:omega,0,1,0,1',
-beamLineAxis1 = 'BL3:Mot:phi,0.707,0.707,0,1',
+beamLineAxis0 ='BL3:Mot:omega,0,1,0,1'
+beamLineAxis1 ='BL3:Mot:phi,0.707,0.707,0,1'
 
 #create calibration object and use it to set parameters
 cal = calObj.create(runs[0],crystalCalibrant)
 
 outdir = cal.calDir #output directory
-calibration_file = f"{outputDetcalName}.DetCal"
+calibration_file = f"{cal.calDir}Default.DetCal"
 
 a = cal.crystal.a
 b = cal.crystal.b
@@ -46,12 +46,17 @@ d_max = max([a,b,c])
 inst=cal.Inst #TODO: needed?
 
 #check that runs are all from the same state
+
 allID = []
-for run in runs:
-    tempCal = calObj.Create(run,"crystalCalibrant")
+prog = 0
+for i,run in enumerate(runs):
+    prog = 100*((i+1)/len(runs))
+    print(f"checking all {len(runs)} requested runs are from same state: {prog:.1f}% complete", end = "\r")
+    tempCal = calObj.create(run,crystalCalibrant)
     allID.append(tempCal.stateID)
 
 stateIDSet = set(allID)
+
 if len(stateIDSet) != 1:
     print("ERROR all runs must be from same state!")
     print(f"There are {len(stateIDSet)} states in run list:")
@@ -59,8 +64,11 @@ if len(stateIDSet) != 1:
         print(state)
     sys.exit()
 
+prog = 0
+print("Finding and integrating peaks")
 for i, run in enumerate(runs):
 
+    print(f"Working on run {run} {(i+1)}/{len(runs)} runs", end="\r")
     cal = calObj.create(run,crystalCalibrant)
 
     filename = cal.nxsFile

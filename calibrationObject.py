@@ -23,7 +23,9 @@ calibrantLibrary = f"{sxlCalibHome}/CalibrantSamples/"
 class create():
     
     
-    def __init__(self,runNumber,calibrantMaterial):
+    def __init__(self,runNumber,calibrantMaterial,verbose=False):
+
+        self.verbose = verbose
 
         self.isLite = False #not using lite mode for now.
         instDict = snp.loadSNAPInstPrm()
@@ -70,7 +72,8 @@ class create():
             print(f"Initialised state")
             return
         else:
-            print(f"State available")
+            if self.verbose:
+                print(f"State available")
         return
 
     def setCalibrant(self,calibrantMaterial): 
@@ -78,7 +81,8 @@ class create():
     # get and set crystal parameters 
         import crystalBox as crys
 
-        print(f"setting crystal info for: {calibrantMaterial}")
+        if self.verbose:
+            print(f"setting crystal info for: {calibrantMaterial}")
         self.crystal = crys.Box(calibrantMaterial)
         return
 
