@@ -27,7 +27,7 @@ beamLineAxis0 ='BL3:Mot:omega,0,1,0,1'
 beamLineAxis1 ='BL3:Mot:phi,0.707,0.707,0,1'
 
 #create calibration object and use it to set parameters
-cal = calObj.create(runs[0],crystalCalibrant)
+cal = calObj.create(runs[0],crystalCalibrant,verbose=True)
 
 outdir = cal.calDir #output directory
 calibration_file = f"{cal.calDir}Default.DetCal"
@@ -68,7 +68,7 @@ prog = 0
 print("Finding and integrating peaks")
 for i, run in enumerate(runs):
 
-    print(f"Working on run {run} {(i+1)}/{len(runs)} runs", end="\r")
+    print(f"Working on run {run} ({(i+1)}/{len(runs)} runs)", end="\r")
     cal = calObj.create(run,crystalCalibrant)
 
     filename = cal.nxsFile
