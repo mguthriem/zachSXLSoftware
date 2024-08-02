@@ -5,11 +5,15 @@ import os
 #add this folder to the path
 import sys
 sys.path.append("/SNS/SNAP/shared/Malcolm/code/SNAPRedScripted/")
+sys.path.append("/SNS/SNAP/shared/Malcolm/code/crystalBox/")
 
 import json
 
 #import SNAPTools some useful functions for snap data
 import SNAPTools as snp
+
+
+#needed while hacking
 import importlib
 importlib.reload(snp)
 
@@ -18,6 +22,32 @@ calibrantLibrary = f"{sxlCalibHome}/CalibrantSamples/"
 
 class create():
     
+    
+    def __init__(self,runNumber,calibrantMaterial):
+
+        self.isLite = False #not using lite mode for now.
+        instDict = snp.loadSNAPInstPrm()
+
+        self.Inst = instDict["name"]
+        self.calDirectory=sxlCalibHome
+
+        self.stateID,self.stateDict,errorState= snp.StateFromRunFunction(runNumber)
+        if errorState['value'] != 0: #something went wrong
+            print(f"Error in {errorState['function']}")
+            return
+
+        self.nxsFile = self.stateDict["nxsFile"]
+        #buildPath to output folder
+        self.outdir = sxlCalibHome + self.stateID + '/' #don't like this name to making an alias
+        self.calDir = sxlCalibHome + self.stateID + '/'
+
+        #check state already exists and initialise if necessary
+        self.initState()
+
+        #set up calibrant if specified
+        if calibrantMaterial != None:
+            self.setCalibrant(calibrantMaterial)
+        
     def initState(self):
 
     #     #checks if state exists and that it contains a default DetCal file
@@ -41,37 +71,16 @@ class create():
             return
         else:
             print(f"State available")
-
         return
-    
-    def __init__(self,runNumber):
 
-        self.isLite = False #not using lite mode for now.
-        instDict = snp.loadSNAPInstPrm()
+    def setCalibrant(self,calibrantMaterial): 
 
-        self.Inst = instDict["name"]
-        self.calDirectory=sxlCalibHome
+    # get and set crystal parameters 
+        import crystalBox as crys
 
-        self.stateID,self.stateDict,errorState= snp.StateFromRunFunction(runNumber)
-        if errorState['value'] != 0: #something went wrong
-            print(f"Error in {errorState['function']}")
-            return
-
-        self.nxsFile = self.stateDict["nxsFile"]
-        #buildPath to output folder
-        self.outdir = sxlCalibHome + self.stateID + '/' #don't like this name to making an alias
-        self.calDir = sxlCalibHome + self.stateID + '/'
-
-        #initialise state if necessary
-        self.initState()
-
-        outputFileType='detcal'
-
-
-    # def setCalibrant(self,jsonName):
-    #     #TODO
-
-    
+        print(f"setting crystal info for: {calibrantMaterial}")
+        self.crystal = crys.Box(calibrantMaterial)
+        return
 
     def makeDetCal(self):
 
